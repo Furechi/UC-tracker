@@ -79,6 +79,7 @@ export type MealEntry = {
   time: string; // "HH:mm" 形式
   content: string;
   tags: string[];
+  text: string;
 };
 
 export type DailyRecord = {
