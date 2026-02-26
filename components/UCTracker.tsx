@@ -30,14 +30,17 @@ export default function UCTracker() {
 
   // ── Load data on mount ──
   useEffect(() => {
-    const r = loadRecords();
-    const m = loadMedications();
+  const init = async () => {
+    const r = await loadRecords();
+    const m = await loadMedications();
     setRecords(r);
     setMedications(m);
     if (r[today()]) setCurrentRecord(r[today()]);
     else setCurrentRecord(emptyRecord(today(), m));
     setLoaded(true);
-  }, []);
+  };
+  init();
+}, []);
 
   // ── Update current record when date/medications change ──
   useEffect(() => {
@@ -74,16 +77,16 @@ export default function UCTracker() {
     setCurrentRecord((prev) => ({ ...prev, [key]: val }));
   }, []);
 
-  const saveRecord = () => {
-    setSaving(true);
-    const updated = { ...records, [selectedDate]: { ...currentRecord, completed: true } };
-    setRecords(updated);
-    setCurrentRecord((prev) => ({ ...prev, completed: true }));
-    saveRecords(updated);
-    setSaving(false);
-    showToast("保存しました ✓");
-    setTimeout(() => setView("home"), 600);
-  };
+  const saveRecord = async () => {
+  setSaving(true);
+  const updated = { ...records, [selectedDate]: { ...currentRecord, completed: true } };
+  setRecords(updated);
+  setCurrentRecord((prev) => ({ ...prev, completed: true }));
+  await saveRecords(updated);  // ← await 追加
+  setSaving(false);
+  showToast("保存しました ✓");
+  setTimeout(() => setView("home"), 600);
+};
 
   // ── NavBar ──
   const NavBar = () => (
@@ -735,12 +738,11 @@ export default function UCTracker() {
             <div style={{ display: "flex", gap: 10 }}>
               {editingMedId && (
                 <button
-                  onClick={() => {
-                    const updated = medications.filter((m) => m.id !== editingMedId);
-                    setMedications(updated);
-                    saveMedications(updated);
-                    setShowMedForm(false);
-                    showToast("削除しました");
+                  onClick={async () => { const updated = medications.filter((m) => m.id !== editingMedId); 
+                    setMedications(updated); 
+                    await saveMedications(updated); 
+                    setShowMedForm(false); 
+                    showToast("削除しました"); 
                   }}
                   style={{ padding: "14px 20px", borderRadius: 14, border: `1px solid ${theme.red}`, background: theme.redSoft, color: theme.red, fontSize: 14, cursor: "pointer", fontWeight: 600 }}
                 >
@@ -748,7 +750,7 @@ export default function UCTracker() {
                 </button>
               )}
               <button
-                onClick={() => {
+                onClick={async () => {
                   if (!medDraft.name.trim()) return;
                   let updated: Medication[];
                   if (editingMedId) {
@@ -759,7 +761,7 @@ export default function UCTracker() {
                     updateRecord("meds", { ...currentRecord.meds, [newMed.id]: false });
                   }
                   setMedications(updated);
-                  saveMedications(updated);
+                  await saveMedications(updated);
                   setShowMedForm(false);
                   showToast(editingMedId ? "更新しました" : "追加しました");
                 }}
