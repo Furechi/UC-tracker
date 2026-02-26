@@ -1,3 +1,23 @@
+import type { DailyRecord, Medication } from "./storage"; // 必要に応じて調整
+
+export function emptyRecord(date: string, medications: Medication[] = []): DailyRecord {
+  return {
+    date,
+    completed: false,
+    meds: Object.fromEntries((medications || []).map((m) => [m.id, false])),
+    meals: [],
+    stool: null,
+    blood: null,
+    pain: null,
+    sleepStart: "",
+    sleepEnd: "",
+    workLocation: "",
+    workHours: 0,
+    condition: "",
+    bowelCount: 0,
+  };
+}
+
 export const theme = {
   bg: "#0f1117",
   card: "#1a1d27",
