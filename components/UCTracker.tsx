@@ -26,7 +26,7 @@ export default function UCTracker() {
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [medications, setMedications] = useState<Medication[]>([]);
-  const [mealDraft, setMealDraft] = useState<MealEntry>({ type: "昼食", text: "", tags: [] });
+  const [mealDraft, setMealDraft] = useState<MealEntry>({ type: "昼食", text: "", tags: [] ,time: "", content: "",});
   const [showMealModal, setShowMealModal] = useState(false);
   const [showMedForm, setShowMedForm] = useState(false);
   const [medDraft, setMedDraft] = useState({ name: "", dosage: "" });
