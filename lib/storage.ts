@@ -6,7 +6,7 @@ const KEY_MEDICATIONS = "medications";
 export async function loadRecords(): Promise<Record<string, any>> {
   const { data, error } = await supabase
     .from("app_data")
-    .select("value")
+    .select("*")
     .eq("key", KEY_RECORDS)
     .single();
 
@@ -15,6 +15,7 @@ export async function loadRecords(): Promise<Record<string, any>> {
 }
 
 export async function saveRecords(records: Record<string, any>) {
+  console.log("📝 saveRecords 呼び出し:", records); // ← 追加
   const { error } = await supabase.from("app_data").upsert([
     {
       key: KEY_RECORDS,

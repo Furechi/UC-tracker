@@ -3,12 +3,17 @@
 import { useState, useEffect, useCallback } from "react";
 import { theme, BLOOD_OPTIONS, STOOL_OPTIONS, PAIN_OPTIONS, WORK_LOCATION, MEAL_TYPES, FOOD_TAGS, INPUT_SECTIONS } from "@/lib/constants";
 import {
-  DailyRecord, Medication, MealEntry, RecordsMap,
   loadRecords, saveRecords, loadMedications, saveMedications,
-  emptyRecord, today, sleepDuration, getWeekDates, completionPct,
+  
 } from "@/lib/storage";
 import { Pill, SectionCard, Counter, ScoreSlider } from "./ui";
 import { IMEInput, IMETextarea } from "./IMEInput";
+import { today } from "@/lib/utils";
+import { emptyRecord } from "@/lib/constants";
+import { completionPct,sleepDuration, getWeekDates, DailyRecord, Medication, MealEntry, RecordsMap, } from "@/lib/utils";
+
+
+
 
 type ViewType = "home" | "input" | "history" | "insights";
 
