@@ -15,17 +15,25 @@ export async function loadRecords(): Promise<Record<string, any>> {
 }
 
 export async function saveRecords(records: Record<string, any>) {
-  console.log("📝 saveRecords 呼び出し:", records); // ← 追加
-  const { error } = await supabase.from("app_data").upsert([
+  console.log("📝 saveRecords 呼び出し:", records);
+
+  const { error } = await supabase.from("app_data").upsert(
+    [
+      {
+        key: KEY_RECORDS,
+        value: records,
+      },
+    ],
     {
-      key: KEY_RECORDS,
-      value: records,
-    },
-  ]);
+      onConflict: "key",
+    }
+  );
 
   if (error) {
     console.error("保存エラー:", error.message);
   }
+
+  return { error };
 }
 
 export async function loadMedications(): Promise<any[]> {
@@ -40,15 +48,22 @@ export async function loadMedications(): Promise<any[]> {
 }
 
 export async function saveMedications(medications: any[]) {
-  const { error } = await supabase.from("app_data").upsert([
+  const { error } = await supabase.from("app_data").upsert(
+    [
+      {
+        key: KEY_MEDICATIONS,
+        value: medications,
+      },
+    ],
     {
-      key: KEY_MEDICATIONS,
-      value: medications,
-    },
-  ]);
+      onConflict: "key",
+    }
+  );
 
   if (error) {
     console.error("保存エラー:", error.message);
   }
+
+  return { error };
 }
 

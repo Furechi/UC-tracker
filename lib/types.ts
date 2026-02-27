@@ -2,14 +2,14 @@ export type DailyRecord = {
   date: string;
   completed: boolean;
   meds: Record<string, boolean>;
-  meals: any[]; // 必要に応じて型を定義
+  meals: any[];
   stool: string | null;
   blood: string | null;
   pain: string | null;
-  sleepStart: string;
-  sleepEnd: string;
-  workLocation: string;
-  workHours: number;
+  sleepStart: string | null;
+  sleepEnd: string | null;
+  workLocation: string | null;
+  workHours: number | null;
   condition: string;
   bowelCount: number;
 };

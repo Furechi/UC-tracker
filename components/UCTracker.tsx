@@ -21,7 +21,7 @@ export default function UCTracker() {
   const [view, setView] = useState<ViewType>("home");
   const [records, setRecords] = useState<RecordsMap>({});
   const [selectedDate, setSelectedDate] = useState(today());
-  const [currentRecord, setCurrentRecord] = useState<DailyRecord>(emptyRecord(today()));
+  const [currentRecord, setCurrentRecord] = useState<DailyRecord | null>(null);
   const [inputSection, setInputSection] = useState(0);
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -38,6 +38,8 @@ export default function UCTracker() {
   const init = async () => {
     const r = await loadRecords();
     const m = await loadMedications();
+    console.log("📦 records:", r); 
+    console.log("💊 medications:", m);
     setRecords(r);
     setMedications(m);
     if (r[today()]) setCurrentRecord(r[today()]);
@@ -82,16 +84,49 @@ export default function UCTracker() {
     setCurrentRecord((prev) => ({ ...prev, [key]: val }));
   }, []);
 
-  const saveRecord = async () => {
+const saveRecord = async () => {
   setSaving(true);
-  const updated = { ...records, [selectedDate]: { ...currentRecord, completed: true } };
+
+  const updated = {
+    ...records,
+    [selectedDate]: {
+      ...currentRecord,
+      completed: true,
+    },
+  };
+
+const saveRecord = async () => {
+  if (!currentRecord) return;
+
+  setSaving(true);
+
+  const updated: RecordsMap = {
+    ...records,
+    [selectedDate]: {
+      ...currentRecord,
+      completed: true,
+    },
+  };
+
   setRecords(updated);
-  setCurrentRecord((prev) => ({ ...prev, completed: true }));
-  await saveRecords(updated);  // ← await 追加
+  setCurrentRecord((prev) => ({ ...prev!, completed: true }));
+
+  const { error } = await saveRecords(updated);
+
+  if (error) {
+    console.error("❌ 保存エラー:", error.message);
+    showToast("保存に失敗しました");
+  } else {
+    console.log("✅ 保存成功");
+    showToast("保存しました ✓");
+    setTimeout(() => setView("home"), 600);
+  }
+
   setSaving(false);
-  showToast("保存しました ✓");
-  setTimeout(() => setView("home"), 600);
 };
+
+
+
 
   // ── NavBar ──
   const NavBar = () => (
@@ -133,7 +168,7 @@ export default function UCTracker() {
     const weekDates = getWeekDates(today());
     const dayNames = ["月", "火", "水", "木", "金", "土", "日"];
 
-    return (
+     (
       <div style={{ padding: "20px 16px 100px" }}>
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 13, color: theme.textSub, marginBottom: 4 }}>
@@ -143,10 +178,11 @@ export default function UCTracker() {
         </div>
 
         {/* Week strip */}
-        <div style={{ display: "flex", gap: 4, marginBottom: 20 }}>
+        <div style={{ disreturnplay: "flex", gap: 4, marginBottom: 20 }}>
           {weekDates.map((d, i) => {
             const isToday = d === today();
             const hasRecord = records[d]?.completed;
+
             return (
               <button
                 key={d}
@@ -241,7 +277,7 @@ export default function UCTracker() {
   const InputView = () => {
     const sec = INPUT_SECTIONS[inputSection];
     const dateLabel = selectedDate === today() ? "今日" : new Date(selectedDate).toLocaleDateString("ja-JP", { month: "short", day: "numeric" });
-
+console.log(records)
     return (
       <div style={{ padding: "16px 16px 120px", minHeight: "100vh" }}>
         {/* Header */}
@@ -791,4 +827,5 @@ export default function UCTracker() {
       )}
     </div>
   );
+}
 }
